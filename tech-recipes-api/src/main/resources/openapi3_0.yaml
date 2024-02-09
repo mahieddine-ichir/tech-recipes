@@ -1,0 +1,136 @@
+openapi: 3.0.1
+info:
+  description: |
+    The Tech recipes API to highlight the Medium tech recipes' series articles.
+
+    ### Main features:
+
+    * List, retrieve recipes
+    * Create a recipe
+    * Delete a recipe
+  license:
+    name: Apache 2.0
+    url: https://www.apache.org/licenses/LICENSE-2.0
+  title: Tech recipes API
+  version: 1.0.0
+servers:
+  - url: /
+paths:
+  /recipes:
+    get:
+      description: retrieve the list of recipes
+      operationId: listRecipes
+      parameters:
+        - name: page
+          description: the page number to return
+          in: query
+          required: false
+          schema:
+            type: integer
+            default: 1
+            minimum: 1
+        - name: size
+          description: the number of elements to return in a page
+          in: query
+          required: false
+          schema:
+            type: integer
+            default: 10
+            minimum: 1
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RecipesResponse'
+          description: OK
+      summary: List recipes
+      x-accepts: application/json
+    post:
+      description: creat a new recipe
+      operationId: createRecipe
+      parameters:
+        - name: recipe
+          description: recipe to create
+          in: query
+          required: true
+          schema:
+            $ref: '#/components/schemas/RecipeResponse'
+      responses:
+        201:
+          description: created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RecipeResponse'
+
+  /recipes/{id}:
+    get:
+      description: retrieve a recipe by its id
+      operationId: getRecipe
+      parameters:
+        - name: id
+          description: the recipe id to retrieve
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RecipeResponse'
+        "204":
+          description: No recipe for id
+components:
+  schemas:
+    RecipesResponse:
+      example:
+        recipes:
+          - name: name
+            id: id
+          - name: name
+            id: id
+        page:
+          next: next
+          total: 0
+          previous: previous
+      properties:
+        recipes:
+          items:
+            $ref: '#/components/schemas/RecipeResponse'
+          type: array
+        page:
+          $ref: '#/components/schemas/Page'
+      type: object
+    RecipeResponse:
+      example:
+        name: name
+        id: id
+      properties:
+        id:
+          description: the unique identifier of a recipe
+          type: string
+        name:
+          description: name given to the recipe on creation
+          type: string
+      type: object
+    Page:
+      description: paging metadata for navigation
+      example:
+        next: next
+        total: 0
+        previous: previous
+      properties:
+        total:
+          description: the total number of items
+          type: integer
+        next:
+          description: "the next page, if any"
+          type: string
+        previous:
+          description: "the previous page, if any"
+          type: string
+      type: object
